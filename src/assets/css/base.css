@@ -88,3 +88,11 @@ body {
   font-family: "Inter", sans-serif;
   font-weight: var(--font-weight-normal);
 }
+
+:root[data-font-theme="serif"] body {
+  font-family: "Noto Serif", serif;
+}
+
+:root[data-font-theme="monospace"] body {
+  font-family: "Source Code Pro", monospace;
+}

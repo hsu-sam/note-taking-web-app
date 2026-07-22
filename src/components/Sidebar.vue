@@ -13,7 +13,7 @@ interface Section {
 const sections: Section[] = [
   {
     label: "All Notes",
-    name: "user.index",
+    name: "home",
     icon: "local:home",
   },
   {

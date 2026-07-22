@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
+import { RouterLink, type RouteLocationRaw } from "vue-router";
 
 type ButtonVariant = "primary" | "secondary" | "border" | "danger";
 
@@ -12,6 +13,7 @@ interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   type?: "button" | "submit" | "reset";
+  to?: RouteLocationRaw;
 }
 
 withDefaults(defineProps<ButtonProps>(), {
@@ -39,7 +41,25 @@ const sizes: Record<ButtonSize, string> = {
 </script>
 
 <template>
+  <RouterLink
+    v-if="to"
+    :to="to"
+    :class="[variants[variant], sizes[size]]"
+    class="disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[.98] inline-flex"
+    :aria-disabled="disabled || loading"
+    :tabindex="disabled || loading ? -1 : 0"
+    @click="(event) => {
+      if (disabled || loading) event.preventDefault();
+    }"
+  >
+    <Icon icon="mdi-light:loading" class="animate-spin" v-if="loading" />
+    <Icon v-else-if="icon" :icon class="w-6 h-6" />
+    <span class="flex items-center gap-100" v-if="$slots.default">
+      <slot />
+    </span>
+  </RouterLink>
   <button
+    v-else
     :type
     :disabled="disabled || loading"
     :class="[variants[variant], sizes[size]]"
