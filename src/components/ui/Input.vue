@@ -107,6 +107,6 @@ const reactiveType = ref(props.type);
 }
 
 .input-container:has(:focus-visible) {
-  @apply outline-2 outline-offset-2 outline-neutral-400;
+  @apply outline-1 outline-offset-1 outline-neutral-400;
 }
 </style>

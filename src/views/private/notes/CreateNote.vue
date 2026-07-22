@@ -32,7 +32,7 @@ function saveNote() {
     />
 
     <div class="flex gap-150">
-      <div class="flex flex-col items-start gap-075 text-sm text-neutral-700">
+      <div class="flex flex-col items-start gap-100 text-sm text-neutral-700">
         <div class="flex items-center gap-075 text-sm text-neutral-700 w-23">
           <Icon icon="local:tag" class="size-4" />
           <span>Tags</span>
