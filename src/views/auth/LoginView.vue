@@ -2,27 +2,57 @@
 import Button from "@/components/ui/Button.vue";
 import Input from "@/components/ui/Input.vue";
 import Logo from "@/components/ui/Logo.vue";
+
+import { useWebHaptics } from "web-haptics/vue";
+
+const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 </script>
 
 <template>
   <div
-    class="flex flex-col gap-400 px-200 py-500 md:px-400 md:py-600 bg-neutral-0 rounded-12 md:max-w-md w-full border border-neutral-200"
+    class="flex flex-col gap-200 px-200 py-500 md:px-400 md:py-600 bg-neutral-0 rounded-12 md:max-w-130.5 w-full border border-neutral-200"
   >
-    <Logo />
-    <div>
+    <Logo class="self-center" />
+    <div class="flex flex-col items-center gap-100">
       <h1>Welcome to Note</h1>
       <p>Please log in to continue</p>
     </div>
-    <form>
-      <Input label="Email" type="email" placeholder="Enter your email" />
+    <form class="flex flex-col gap-200">
       <Input
-        label="Password"
-        type="password"
-        placeholder="Enter your password"
+        label="Email Address"
+        type="email"
+        placeholder="email@example.com"
+        @click="trigger('selection')"
       />
-      <Button class="w-full">Log In</Button>
+      <Input label="Password" type="password" @click="trigger('selection')" />
+      <Button class="w-full" @click="trigger('selection')">Log In</Button>
     </form>
 
-    <p>No account yet?<span>Sign up</span></p>
+    <div class="border-t border-neutral-300"></div>
+
+    <div class="flex flex-col gap-200">
+      <p class="self-center">Or login with:</p>
+
+      <Button
+        class="w-full"
+        variant="border"
+        icon="local:google"
+        @click="trigger('selection')"
+      >
+        Google
+      </Button>
+    </div>
+
+    <div class="border-t border-neutral-300"></div>
+
+    <p class="self-center">
+      No account yet?
+      <router-link
+        :to="{ name: 'auth.signup' }"
+        class="text-neutral-950 hover:text-neutral-600"
+        @click="trigger('selection')"
+        >Sign up</router-link
+      >
+    </p>
   </div>
 </template>
