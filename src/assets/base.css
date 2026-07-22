@@ -1,0 +1,90 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  /* COLORS */
+  --color-bg-dark: rgba(14, 18, 27, 1);
+  --color-vv: hsl(221, 8%, 48%);
+  --color-neutral-950: hsl(222, 32%, 8%);
+  --color-neutral-900: hsl(230, 19%, 12%);
+  --color-neutral-800: hsl(231, 16%, 16%);
+  --color-neutral-700: hsl(231, 16%, 20%);
+  --color-neutral-600: hsl(222, 11%, 36%);
+  --color-neutral-500: hsl(221, 8%, 48%);
+  --color-neutral-400: hsl(220, 11%, 64%);
+  --color-neutral-300: hsl(219, 15%, 82%);
+  --color-neutral-200: hsl(216, 19%, 90%);
+  --color-neutral-100: hsl(216, 26%, 96%);
+  --color-neutral-50: hsl(216, 33%, 97%);
+  --color-neutral-0: hsl(0, 0%, 100%);
+
+  --color-blue-700: hsl(228, 70%, 48%);
+  --color-blue-500: hsl(228, 100%, 60%);
+
+  --color-blue-50: hsl(222, 100%, 96%);
+
+  --color-green-500: hsl(148, 71%, 44%);
+  --color-green-100: hsl(154, 84%, 90%);
+
+  --color-red-500: hsl(355, 96%, 60%);
+  --color-red-100: hsl(356, 100%, 92%);
+
+  /* FONT WEIGHT */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* FONT SIZE */
+  --text-2xl: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-base: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  /* SPACING */
+  --spacing-0: 0px;
+  --spacing-025: 2px;
+  --spacing-050: 4px;
+  --spacing-075: 6px;
+  --spacing-100: 8px;
+  --spacing-150: 12px;
+  --spacing-200: 16px;
+  --spacing-250: 20px;
+  --spacing-300: 24px;
+  --spacing-400: 32px;
+  --spacing-500: 40px;
+  --spacing-600: 48px;
+  --spacing-800: 64px;
+  --spacing-1000: 80px;
+
+  /* RADIUS */
+  --radius-4: 0.25rem;
+  --radius-6: 0.5rem;
+  --radius-8: 0.75rem;
+  --radius-10: 0.625rem;
+  --radius-12: 0.75rem;
+  --radius-16: 1rem;
+  --radius-20: 1.25rem;
+  --radius-24: 1.5rem;
+  --radius-999: 62.4375rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-neutral-950);
+  background-color: var(--color-neutral-0);
+  font-family: "Inter", sans-serif;
+  font-weight: var(--font-weight-normal);
+}
