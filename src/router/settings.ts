@@ -2,7 +2,7 @@ import type { RouteRecordRaw } from "vue-router";
 
 export const settingRoutes: RouteRecordRaw[] = [
   {
-    path: "/settings",
+    path: "settings",
     component: () => import("@/views/private/settings/SettingsIndex.vue"),
     name: "settings",
     meta: { layout: "user" },
@@ -22,11 +22,6 @@ export const settingRoutes: RouteRecordRaw[] = [
         path: "change-password",
         name: "settings.change-password",
         component: () => import("@/views/private/settings/ChangePassword.vue"),
-      },
-      {
-        path: "logout",
-        name: "settings.logout",
-        component: () => import("@/views/private/settings/Logout.vue"),
       },
     ],
   },

@@ -47,13 +47,14 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
         <div class="border-t border-neutral-200"></div>
 
         <li>
-          <button
-            class="w-full flex items-center gap-100 rounded-6 px-150 py-100 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
+          <router-link
+            :to="{ name: 'auth.logout' }"
+            class="flex w-full items-center gap-100 rounded-6 px-150 py-100 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
             @click="trigger('selection')"
           >
             <Icon icon="local:logout" class="w-6 h-6" />
             <span>Logout</span>
-          </button>
+          </router-link>
         </li>
       </ul>
     </nav>

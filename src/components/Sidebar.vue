@@ -7,7 +7,6 @@ import Tags from "./Tags.vue";
 interface Section {
   label: string;
   name: string;
-  path: string;
   icon: string;
 }
 
@@ -15,13 +14,11 @@ const sections: Section[] = [
   {
     label: "All Notes",
     name: "user.index",
-    path: "/home",
     icon: "local:home",
   },
   {
     label: "Archived",
     name: "user.archived",
-    path: "/archived",
     icon: "local:archive",
   },
 ];

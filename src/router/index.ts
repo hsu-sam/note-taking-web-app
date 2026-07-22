@@ -15,7 +15,16 @@ declare module "vue-router" {
 }
 
 const routes: RouteRecordRaw[] = [
-  ...publicRoutes,
+  {
+    path: "/",
+    redirect: "/login",
+  },
+  {
+    path: "/",
+    component: () => import("@/layouts/AuthLayout.vue"),
+    meta: { authless: true },
+    children: publicRoutes,
+  },
   {
     path: "/logout",
     name: "auth.logout",
@@ -23,15 +32,16 @@ const routes: RouteRecordRaw[] = [
     meta: { authless: true },
   },
   {
-    path: "",
+    path: "/",
     name: "app",
-    component: () => import("../layouts/MainLayout.vue"),
+    component: () => import("@/layouts/MainLayout.vue"),
     children: [
       {
-        path: "/u",
-        alias: "/users",
-        children: [...userRoutes],
+        path: "u",
+        alias: "users",
         meta: { layout: "user" },
+        redirect: { name: "user.index" },
+        children: userRoutes,
       },
       ...settingRoutes,
     ],
