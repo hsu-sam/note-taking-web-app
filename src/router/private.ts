@@ -5,7 +5,7 @@ export const userRoutes: RouteRecordRaw[] = [
     path: "home",
     component: () => import("@/views/private/notes/AllNotesIndex.vue"),
     name: "home",
-    meta: { layout: "user" },
+    meta: { layout: "user", title: "All Notes" },
     children: [
       {
         path: "create",
@@ -18,5 +18,6 @@ export const userRoutes: RouteRecordRaw[] = [
     path: "archived",
     component: () => import("@/views/private/ArchivedIndex.vue"),
     name: "user.archived",
+    meta: { title: "Archived Notes" },
   },
 ];

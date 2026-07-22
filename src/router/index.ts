@@ -11,6 +11,7 @@ declare module "vue-router" {
   interface RouteMeta {
     authless?: boolean;
     layout?: string;
+    title?: string;
   }
 }
 

@@ -8,12 +8,14 @@ export interface InputProps {
   autocomplete?: string;
   label?: string;
   name: string;
+  variant?: "default" | "ghost";
   disabled?: boolean;
   isValid?: boolean;
   required?: boolean;
 }
 const props = withDefaults(defineProps<InputProps>(), {
   type: "text",
+  variant: "default",
   required: true,
 });
 
@@ -34,16 +36,21 @@ const reactiveType = ref(props.type);
         $attrs.class,
       ]"
     >
-      <span class="font-semibold">
+      <span v-if="label" class="font-semibold">
         {{ label }} <em class="text-red-500 not-italic" v-if="required">*</em>
       </span>
 
       <div
-        class="relative flex border border-neutral-300 rounded-8 py-150 px-200 font-medium items-center input-container"
-        :class="{
-          'text-green-600': isValid,
-          'text-error': meta.touched && !meta.valid,
-        }"
+        class="input-container relative flex items-center font-medium"
+        :class="[
+          variant === 'default'
+            ? 'rounded-8 border border-neutral-300 px-200 py-150'
+            : 'rounded-4',
+          {
+            'text-green-600': isValid,
+            'text-error': meta.touched && !meta.valid,
+          },
+        ]"
       >
         <input
           :autocomplete
@@ -55,7 +62,7 @@ const reactiveType = ref(props.type);
             'bg-green-600': isValid,
             'border-error': meta.touched && !meta.valid,
           }"
-          class="flex-1 focus-visible:outline-none"
+          class="min-w-0 flex-1 focus-visible:outline-none"
         />
         <div
           :class="{

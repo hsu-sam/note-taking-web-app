@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import SearchInput from "@/components/ui/SearchInput.vue";
 import { Icon } from "@iconify/vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
+
+const route = useRoute();
+const pageTitle = computed(() => route.meta.title ?? "All Notes");
 
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 </script>
@@ -10,7 +15,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
   <div
     class="flex items-center justify-between p-400 bg-white border-b border-neutral-200 h-20.25"
   >
-    <h1>All Notes</h1>
+    <h1>{{ pageTitle }}</h1>
     <div class="flex items-center gap-075">
       <SearchInput
         placeholder="Search by title, content, tags..."

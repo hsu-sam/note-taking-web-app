@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Logo from "@/components/ui/Logo.vue";
 import { Icon } from "@iconify/vue";
+import { useRoute } from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
 import Tags from "./Tags.vue";
 
@@ -23,6 +24,10 @@ const sections: Section[] = [
   },
 ];
 
+const route = useRoute();
+const isSectionActive = (section: Section) =>
+  route.matched.some((record) => record.name === section.name);
+
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 </script>
 
@@ -41,7 +46,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
           :key="section.name"
           :to="{ name: section.name }"
           :class="{
-            'active group': $route.name === section.name,
+            'active group': isSectionActive(section),
           }"
           @click="trigger('selection')"
         >
@@ -53,7 +58,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
                 :icon="section.icon"
                 class="w-6 h-6"
                 :class="
-                  $route.name === section.name
+                  isSectionActive(section)
                     ? 'text-blue-500 '
                     : 'text-neutral-950'
                 "
@@ -65,7 +70,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
             <Icon
               icon="local:chevron-right"
               class="w-6 h-6"
-              v-if="$route.name === section.name"
+              v-if="isSectionActive(section)"
             />
           </div>
         </router-link>

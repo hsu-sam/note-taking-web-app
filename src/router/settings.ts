@@ -5,7 +5,7 @@ export const settingRoutes: RouteRecordRaw[] = [
     path: "settings",
     component: () => import("@/views/private/settings/SettingsIndex.vue"),
     name: "settings",
-    meta: { layout: "user" },
+    meta: { layout: "user", title: "Settings" },
     redirect: { name: "settings.color-theme" },
     children: [
       {
