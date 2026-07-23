@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@iconify/vue": "^5.0.1",
+    "@supabase/supabase-js": "^2.110.8",
     "@tailwindcss/vite": "^4.3.3",
     "tailwindcss": "^4.3.3",
     "vee-validate": "^4.15.1",

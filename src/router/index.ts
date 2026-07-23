@@ -6,6 +6,7 @@ import {
 import { userRoutes } from "./private.ts";
 import { publicRoutes } from "./public.ts";
 import { settingRoutes } from "./settings.ts";
+import { useAuth } from "@/services/useAuth";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -59,6 +60,34 @@ export const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  next();
+router.beforeEach(async (to) => {
+  const { initAuth, isAuthenticated, isPasswordRecovery } = useAuth();
+
+  // Wait for the Supabase session to be restored before making any
+  // authentication-based routing decision.
+  await initAuth();
+
+  // The reset-password page must always be reachable: Supabase signs the
+  // user in via the recovery link, so `isAuthenticated` is true even though
+  // they haven't "really" logged in yet.
+  if (to.name === "auth.password-reset") {
+    return true;
+  }
+
+  const isPublicRoute = to.meta.authless ?? false;
+
+  if (!isPublicRoute && !isAuthenticated.value) {
+    return { name: "auth.login", query: { redirect: to.fullPath } };
+  }
+
+  if (
+    isPublicRoute &&
+    to.name !== "auth.logout" &&
+    isAuthenticated.value &&
+    !isPasswordRecovery.value
+  ) {
+    return { name: "home" };
+  }
+
+  return true;
 });
