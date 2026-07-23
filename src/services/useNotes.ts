@@ -13,7 +13,17 @@ export function useBookmarks() {
 
     const { data, error: err } = await supabase
       .from("notes")
-      .select("*")
+      .select(
+        `
+    *,
+    note_tags (
+      tags (
+        id,
+        name
+      )
+    )
+  `,
+      )
       .order("created_at", { ascending: false });
 
     if (err) {
