@@ -1,19 +1,66 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
 
 import Button from "@/components/ui/Button.vue";
 import Input from "@/components/ui/Input.vue";
+import { useToast } from "@/composables/useToast";
+import { useNotes } from "@/services/useNotes";
 
 const title = ref("");
 const tags = ref("");
 const content = ref("");
+const isSaving = ref(false);
 
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
+const toast = useToast();
+const router = useRouter();
+const { createNote } = useNotes();
 
-function saveNote() {
+function parseTags(rawTags: string): string[] {
+  return rawTags
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter((tag) => Boolean(tag));
+}
+
+async function saveNote() {
   trigger("selection");
+
+  if (isSaving.value) {
+    return;
+  }
+
+  const trimmedTitle = title.value.trim();
+  const trimmedContent = content.value.trim();
+
+  if (!trimmedTitle && !trimmedContent) {
+    trigger("error");
+    toast.error("Please add a title or some content before saving.");
+    return;
+  }
+
+  isSaving.value = true;
+
+  const { error } = await createNote({
+    title: trimmedTitle,
+    content: trimmedContent,
+    tags: parseTags(tags.value),
+  });
+
+  isSaving.value = false;
+
+  if (error) {
+    trigger("error");
+    toast.error(error.message);
+    return;
+  }
+
+  trigger("success");
+  toast.success("Note saved.");
+  await router.push({ name: "home" });
 }
 </script>
 
@@ -74,11 +121,12 @@ function saveNote() {
     </div>
 
     <div class="flex gap-200 border-t border-neutral-200 pt-200">
-      <Button type="submit">Save Note</Button>
+      <Button type="submit" :loading="isSaving">Save Note</Button>
       <Button
         :to="{ name: 'home' }"
         type="button"
         variant="secondary"
+        :disabled="isSaving"
         @click="trigger('selection')"
       >
         Cancel
