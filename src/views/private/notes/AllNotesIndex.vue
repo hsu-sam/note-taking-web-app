@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import Button from "@/components/ui/Button.vue";
 import { Icon } from "@iconify/vue";
+import { computed, onMounted } from "vue";
 import { useWebHaptics } from "web-haptics/vue";
 
+import Note from "@/components/Note.vue";
+import { useNotes } from "@/services/useNotes";
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
+const { notes, loading, fetchNotes } = useNotes();
+
+const activeNotes = computed(() =>
+  notes.value.filter((note) => !note.is_archived),
+);
+
+onMounted(() => {
+  void fetchNotes();
+});
 </script>
 
 <template>
@@ -21,11 +33,20 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
         Create New Note
       </Button>
 
-      <div class="border border-neutral-200 rounded-8 p-100 bg-neutral-100">
+      <div
+        v-if="!loading && activeNotes.length === 0"
+        class="border border-neutral-200 rounded-8 p-100 bg-neutral-100"
+      >
         <p>
           You don’t have any notes yet. Start a new note to capture your
           thoughts and ideas.
         </p>
+      </div>
+
+      <p v-if="loading" class="text-sm text-neutral-500">Loading notes...</p>
+
+      <div v-else-if="activeNotes.length > 0" class="flex flex-col gap-150">
+        <Note v-for="note in activeNotes" :key="note.id" :note="note" />
       </div>
     </div>
 

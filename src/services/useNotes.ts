@@ -19,6 +19,19 @@ export interface CreateNoteResult {
   error: Error | null;
 }
 
+export interface UpdateNoteInput {
+  id: string;
+  title?: string;
+  content?: string;
+  tags?: string[];
+  isArchived?: boolean;
+}
+
+export interface UpdateNoteResult {
+  data: { id: string } | null;
+  error: Error | null;
+}
+
 export function useNotes() {
   const { user } = useAuth();
 
@@ -85,12 +98,122 @@ export function useNotes() {
     return { data: note, error: null };
   };
 
+  const getNoteById = async (id: string) => {
+    const userId = user.value?.id;
+
+    if (!userId) {
+      return {
+        data: null,
+        error: new Error("You must be logged in."),
+      };
+    }
+
+    const { data, error: noteError } = await supabase
+      .from("notes")
+      .select("*")
+      .eq("id", id)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (noteError) {
+      return {
+        data: null,
+        error: noteError,
+      };
+    }
+
+    return {
+      data: (data as Note | null) ?? null,
+      error: null,
+    };
+  };
+
+  const updateNote = async (
+    input: UpdateNoteInput,
+  ): Promise<UpdateNoteResult> => {
+    const userId = user.value?.id;
+
+    if (!userId) {
+      return {
+        data: null,
+        error: new Error("You must be logged in."),
+      };
+    }
+
+    const payload: Partial<
+      Pick<Note, "title" | "content" | "tags" | "is_archived">
+    > = {};
+
+    if (input.title !== undefined) {
+      payload.title = input.title.trim() || "Untitled Note";
+    }
+    if (input.content !== undefined) {
+      payload.content = input.content.trim();
+    }
+    if (input.tags !== undefined) {
+      payload.tags = Array.from(
+        new Set(
+          input.tags.map((tag) => tag.trim()).filter((tag) => Boolean(tag)),
+        ),
+      );
+    }
+    if (input.isArchived !== undefined) {
+      payload.is_archived = input.isArchived;
+    }
+
+    const { data, error: updateError } = await supabase
+      .from("notes")
+      .update(payload)
+      .eq("id", input.id)
+      .eq("user_id", userId)
+      .select("id")
+      .maybeSingle();
+
+    if (updateError || !data) {
+      return {
+        data: null,
+        error: updateError ?? new Error("Could not update note."),
+      };
+    }
+
+    notes.value = notes.value.map((note) =>
+      note.id === input.id ? { ...note, ...payload } : note,
+    );
+
+    return { data, error: null };
+  };
+
+  const deleteNote = async (id: string) => {
+    const userId = user.value?.id;
+
+    if (!userId) {
+      return { error: new Error("You must be logged in.") };
+    }
+
+    const { error: deleteError } = await supabase
+      .from("notes")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", userId);
+
+    if (deleteError) {
+      return { error: deleteError };
+    }
+
+    notes.value = notes.value.filter((note) => note.id !== id);
+
+    return { error: null };
+  };
+
   return {
     notes,
     loading,
     error,
     fetchNotes,
     createNote,
+    getNoteById,
+    updateNote,
+    deleteNote,
   };
 }
 

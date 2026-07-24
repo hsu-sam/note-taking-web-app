@@ -17,7 +17,7 @@ const isSaving = ref(false);
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 const toast = useToast();
 const router = useRouter();
-const { createNote } = useNotes();
+const { createNote, fetchNotes } = useNotes();
 
 function parseTags(rawTags: string): string[] {
   return rawTags
@@ -61,6 +61,7 @@ async function saveNote() {
   trigger("success");
   toast.success("Note saved.");
   await router.push({ name: "home" });
+  await fetchNotes();
 }
 </script>
 

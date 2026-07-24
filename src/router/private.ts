@@ -12,6 +12,11 @@ export const userRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/private/notes/CreateNote.vue"),
         name: "home.create",
       },
+      {
+        path: ":id/edit",
+        component: () => import("@/views/private/notes/EditNote.vue"),
+        name: "home.edit",
+      },
     ],
   },
   {
