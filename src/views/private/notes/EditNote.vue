@@ -21,12 +21,18 @@ const title = ref("");
 const tags = ref("");
 const content = ref("");
 const updatedAt = ref<string | null>(null);
+const isArchived = ref(false);
 
 const isLoading = ref(true);
 const isSaving = ref(false);
+const isRestoring = ref(false);
 const isArchiveModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const noteId = computed(() => String(route.params.id ?? ""));
+
+const listRouteName = computed(
+  () => String(route.matched[0]?.name ?? "home") as "home" | "user.archived",
+);
 
 const formattedUpdatedAt = computed(() => {
   if (!updatedAt.value) return "Not yet saved";
@@ -73,6 +79,7 @@ async function loadNote() {
   content.value = data.content ?? "";
   tags.value = (data.tags ?? []).join(", ");
   updatedAt.value = data.updated_at ?? data.created_at ?? null;
+  isArchived.value = data.is_archived ?? false;
 }
 
 async function saveNote() {
@@ -124,6 +131,26 @@ async function archiveNote() {
   await router.push({ name: "home" });
 }
 
+async function restoreNote() {
+  if (isRestoring.value) return;
+
+  trigger("selection");
+  isRestoring.value = true;
+  const { error } = await updateNote({ id: noteId.value, isArchived: false });
+  isRestoring.value = false;
+
+  if (error) {
+    trigger("error");
+    toast.error(error.message);
+    return;
+  }
+
+  trigger("success");
+  toast.success("Note restored.");
+  await fetchNotes();
+  await router.push({ name: "user.archived" });
+}
+
 async function removeNote() {
   const { error } = await deleteNote(noteId.value);
 
@@ -135,7 +162,7 @@ async function removeNote() {
 
   trigger("success");
   toast.success("Note deleted.");
-  await router.push({ name: "home" });
+  await fetchNotes();
 }
 
 onMounted(() => {
@@ -170,6 +197,14 @@ onMounted(() => {
           </div>
 
           <div
+            v-if="isArchived"
+            class="flex items-center gap-075 text-sm shrink-0 text-neutral-700"
+          >
+            <Icon icon="local:archive" class="size-4" />
+            <span>Status</span>
+          </div>
+
+          <div
             class="flex items-center gap-075 text-sm shrink-0 text-neutral-700"
           >
             <Icon icon="local:circle-clock" class="size-4" />
@@ -188,6 +223,10 @@ onMounted(() => {
             variant="ghost"
           />
 
+          <span v-if="isArchived" class="text-sm text-neutral-700"
+            >Archived</span
+          >
+
           <span class="text-sm text-neutral-400">{{ formattedUpdatedAt }}</span>
         </div>
       </div>
@@ -205,9 +244,9 @@ onMounted(() => {
       </div>
 
       <div class="flex gap-200 border-t border-neutral-200 pt-200">
-        <Button type="submit" :loading="isSaving">Save Changes</Button>
+        <Button type="submit" :loading="isSaving">Save Note</Button>
         <Button
-          :to="{ name: 'home' }"
+          :to="{ name: listRouteName }"
           type="button"
           variant="secondary"
           :disabled="isSaving"
@@ -221,6 +260,17 @@ onMounted(() => {
 
   <div class="flex flex-col gap-200 w-full px-200 py-250">
     <Button
+      v-if="isArchived"
+      type="button"
+      variant="border"
+      icon="local:refresh-left"
+      class="w-full"
+      :loading="isRestoring"
+      @click="restoreNote"
+      >Restore Note</Button
+    >
+    <Button
+      v-else
       type="button"
       variant="border"
       icon="local:archive"

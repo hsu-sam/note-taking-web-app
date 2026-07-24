@@ -2,16 +2,27 @@
 import Button from "@/components/ui/Button.vue";
 import { Icon } from "@iconify/vue";
 import { computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
 
 import Note from "@/components/Note.vue";
 import { useNotes } from "@/services/useNotes";
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 const { notes, loading, fetchNotes } = useNotes();
+const route = useRoute();
+const router = useRouter();
 
-const activeNotes = computed(() =>
-  notes.value.filter((note) => !note.is_archived),
-);
+const activeTag = computed(() => String(route.query.tag ?? ""));
+
+const activeNotes = computed(() => {
+  const withoutArchived = notes.value.filter((note) => !note.is_archived);
+
+  if (!activeTag.value) {
+    return withoutArchived;
+  }
+
+  return withoutArchived.filter((note) => note.tags?.includes(activeTag.value));
+});
 
 onMounted(() => {
   void fetchNotes();
@@ -33,11 +44,16 @@ onMounted(() => {
         Create New Note
       </Button>
 
+      <p v-if="activeTag">
+        All notes with the ”{{ activeTag }}” tag are shown here.
+      </p>
+
       <div
         v-if="!loading && activeNotes.length === 0"
         class="border border-neutral-200 rounded-8 p-100 bg-neutral-100"
       >
-        <p>
+        <p v-if="activeTag">No notes found with the tag “{{ activeTag }}”.</p>
+        <p v-else>
           You don’t have any notes yet. Start a new note to capture your
           thoughts and ideas.
         </p>

@@ -5,6 +5,7 @@ import App from "./App.vue";
 
 import { router } from "./router";
 import { icon } from "./plugins/icon";
+import { VueQueryPlugin } from "@tanstack/vue-query";
 
 const savedFontTheme = localStorage.getItem("font-theme");
 
@@ -16,4 +17,4 @@ if (
   document.documentElement.dataset.fontTheme = savedFontTheme;
 }
 
-createApp(App).use(router).use(icon).mount("#app");
+createApp(App).use(router).use(icon).use(VueQueryPlugin).mount("#app");

@@ -10,9 +10,13 @@ const props = defineProps<{
 }>();
 const route = useRoute();
 
+const editRouteName = computed(() =>
+  props.note.is_archived ? "archived.edit" : "home.edit",
+);
+
 const isActive = computed(
   () =>
-    route.name === "home.edit" &&
+    route.name === editRouteName.value &&
     String(route.params.id ?? "") === props.note.id,
 );
 
@@ -36,7 +40,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 
 <template>
   <RouterLink
-    :to="{ name: 'home.edit', params: { id: note.id } }"
+    :to="{ name: editRouteName, params: { id: note.id } }"
     :class="[
       'flex flex-col gap-150 rounded-8 transition-colors p-100 -m-100',
       isActive ? 'bg-neutral-100' : 'hover:bg-neutral-100',

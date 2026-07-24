@@ -24,5 +24,12 @@ export const userRoutes: RouteRecordRaw[] = [
     component: () => import("@/views/private/archive/ArchivedIndex.vue"),
     name: "user.archived",
     meta: { title: "Archived Notes" },
+    children: [
+      {
+        path: ":id/edit",
+        component: () => import("@/views/private/notes/EditNote.vue"),
+        name: "archived.edit",
+      },
+    ],
   },
 ];

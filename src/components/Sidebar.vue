@@ -3,7 +3,7 @@ import Logo from "@/components/ui/Logo.vue";
 import { Icon } from "@iconify/vue";
 import { useRoute } from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
-import Tags from "./Tags.vue";
+import Tags from "@/views/private/Tags.vue";
 
 interface Section {
   label: string;
