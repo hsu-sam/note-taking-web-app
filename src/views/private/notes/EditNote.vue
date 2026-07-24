@@ -15,7 +15,7 @@ const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
-const { getNoteById, updateNote, deleteNote, fetchNotes } = useNotes();
+const { getNoteById, updateNote, deleteNote } = useNotes();
 
 const title = ref("");
 const tags = ref("");
@@ -112,8 +112,7 @@ async function saveNote() {
 
   trigger("success");
   toast.success("Note updated.");
-  await fetchNotes();
-  await router.push({ name: "home" });
+  await router.push({ name: listRouteName.value });
 }
 
 async function archiveNote() {
@@ -127,8 +126,7 @@ async function archiveNote() {
 
   trigger("success");
   toast.success("Note archived.");
-  await fetchNotes();
-  await router.push({ name: "home" });
+  await router.push({ name: listRouteName.value });
 }
 
 async function restoreNote() {
@@ -147,7 +145,6 @@ async function restoreNote() {
 
   trigger("success");
   toast.success("Note restored.");
-  await fetchNotes();
   await router.push({ name: "user.archived" });
 }
 
@@ -162,7 +159,7 @@ async function removeNote() {
 
   trigger("success");
   toast.success("Note deleted.");
-  await fetchNotes();
+  await loadNote();
 }
 
 onMounted(() => {

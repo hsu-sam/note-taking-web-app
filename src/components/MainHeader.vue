@@ -5,8 +5,11 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
 
+import { useNoteSearch } from "@/composables/useNoteSearch";
+
 const route = useRoute();
 const pageTitle = computed(() => route.meta.title ?? "All Notes");
+const { searchQuery } = useNoteSearch();
 
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 </script>
@@ -18,6 +21,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
     <h1>{{ pageTitle }}</h1>
     <div class="flex items-center gap-075">
       <SearchInput
+        v-model="searchQuery"
         placeholder="Search by title, content, tags..."
         class="w-75"
         @click="trigger('selection')"

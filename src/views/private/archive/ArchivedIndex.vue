@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import Button from "@/components/ui/Button.vue";
 import { Icon } from "@iconify/vue";
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useWebHaptics } from "web-haptics/vue";
 
 import Note from "@/components/Note.vue";
+import { matchesNoteSearch, useNoteSearch } from "@/composables/useNoteSearch";
 import { useNotes } from "@/services/useNotes";
 
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
-const { notes, loading, fetchNotes } = useNotes();
+const { notes, loading } = useNotes();
+const { debouncedQuery } = useNoteSearch();
 
 const archivedNotes = computed(() =>
-  notes.value.filter((note) => note.is_archived),
+  notes.value
+    .filter((note) => note.is_archived)
+    .filter((note) => matchesNoteSearch(note, debouncedQuery.value)),
 );
-
-onMounted(() => {
-  void fetchNotes();
-});
 </script>
 
 <template>
@@ -38,7 +38,8 @@ onMounted(() => {
         v-if="!loading && archivedNotes.length === 0"
         class="border border-neutral-200 rounded-8 p-100 bg-neutral-100"
       >
-        <p>
+        <p v-if="debouncedQuery">No archived notes match “{{ debouncedQuery }}”.</p>
+        <p v-else>
           No notes have been archived yet. Move notes here for safekeeping,
           or
           <router-link :to="{ name: 'home.create' }" class="underline"

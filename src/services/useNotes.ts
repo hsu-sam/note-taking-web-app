@@ -1,11 +1,11 @@
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
+import { computed } from "vue";
+
 import { supabase } from "@/utils/supabase";
-import { ref } from "vue";
 import type { Note } from "@/types/notes";
 import { useAuth } from "@/services/useAuth";
 
-const notes = ref<Note[]>([]);
-const loading = ref(false);
-const error = ref<string | null>(null);
+export const NOTES_QUERY_KEY = ["notes"] as const;
 
 export interface CreateNoteInput {
   title?: string;
@@ -32,27 +32,37 @@ export interface UpdateNoteResult {
   error: Error | null;
 }
 
+async function fetchNotesRequest(): Promise<Note[]> {
+  const { data, error } = await supabase
+    .from("notes")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as Note[];
+}
+
 export function useNotes() {
-  const { user } = useAuth();
+  const { user, isReady } = useAuth();
+  const queryClient = useQueryClient();
+
+  const notesQuery = useQuery({
+    queryKey: NOTES_QUERY_KEY,
+    queryFn: fetchNotesRequest,
+    enabled: computed(() => isReady.value && !!user.value),
+    staleTime: 30_000,
+  });
+
+  const notes = computed(() => notesQuery.data.value ?? []);
+  const loading = computed(() => notesQuery.isPending.value);
+  const error = computed(() => notesQuery.error.value?.message ?? null);
 
   const fetchNotes = async () => {
-    loading.value = true;
-    error.value = null;
-
-    const { data, error: err } = await supabase
-      .from("notes")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (err) {
-      error.value = err.message;
-      notes.value = [];
-    } else {
-      notes.value = (data ?? []) as Note[];
-    }
-
-    loading.value = false;
+    await notesQuery.refetch();
   };
+
+  const invalidateNotes = () =>
+    queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
 
   const createNote = async (
     input: CreateNoteInput,
@@ -95,10 +105,19 @@ export function useNotes() {
       };
     }
 
+    await invalidateNotes();
+
     return { data: note, error: null };
   };
 
   const getNoteById = async (id: string) => {
+    const cached = queryClient.getQueryData<Note[]>(NOTES_QUERY_KEY);
+    const cachedNote = cached?.find((note) => note.id === id);
+
+    if (cachedNote) {
+      return { data: cachedNote, error: null };
+    }
+
     const userId = user.value?.id;
 
     if (!userId) {
@@ -176,9 +195,7 @@ export function useNotes() {
       };
     }
 
-    notes.value = notes.value.map((note) =>
-      note.id === input.id ? { ...note, ...payload } : note,
-    );
+    await invalidateNotes();
 
     return { data, error: null };
   };
@@ -200,7 +217,7 @@ export function useNotes() {
       return { error: deleteError };
     }
 
-    notes.value = notes.value.filter((note) => note.id !== id);
+    await invalidateNotes();
 
     return { error: null };
   };

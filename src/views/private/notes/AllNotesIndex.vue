@@ -1,31 +1,28 @@
 <script setup lang="ts">
 import Button from "@/components/ui/Button.vue";
 import { Icon } from "@iconify/vue";
-import { computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
 
 import Note from "@/components/Note.vue";
+import { matchesNoteSearch, useNoteSearch } from "@/composables/useNoteSearch";
 import { useNotes } from "@/services/useNotes";
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
-const { notes, loading, fetchNotes } = useNotes();
+const { notes, loading } = useNotes();
+const { debouncedQuery } = useNoteSearch();
 const route = useRoute();
-const router = useRouter();
 
 const activeTag = computed(() => String(route.query.tag ?? ""));
 
 const activeNotes = computed(() => {
   const withoutArchived = notes.value.filter((note) => !note.is_archived);
 
-  if (!activeTag.value) {
-    return withoutArchived;
-  }
+  const byTag = activeTag.value
+    ? withoutArchived.filter((note) => note.tags?.includes(activeTag.value))
+    : withoutArchived;
 
-  return withoutArchived.filter((note) => note.tags?.includes(activeTag.value));
-});
-
-onMounted(() => {
-  void fetchNotes();
+  return byTag.filter((note) => matchesNoteSearch(note, debouncedQuery.value));
 });
 </script>
 
@@ -52,7 +49,10 @@ onMounted(() => {
         v-if="!loading && activeNotes.length === 0"
         class="border border-neutral-200 rounded-8 p-100 bg-neutral-100"
       >
-        <p v-if="activeTag">No notes found with the tag “{{ activeTag }}”.</p>
+        <p v-if="debouncedQuery">
+          No notes match “{{ debouncedQuery }}”.
+        </p>
+        <p v-else-if="activeTag">No notes found with the tag “{{ activeTag }}”.</p>
         <p v-else>
           You don’t have any notes yet. Start a new note to capture your
           thoughts and ideas.

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
 
@@ -8,7 +8,7 @@ import { useNotes } from "@/services/useNotes";
 
 const route = useRoute();
 const router = useRouter();
-const { notes, fetchNotes } = useNotes();
+const { notes } = useNotes();
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 
 const tags = computed(() => {
@@ -35,10 +35,6 @@ function selectTag(tag: string) {
 
   router.push({ name: "home", query: { tag } });
 }
-
-onMounted(() => {
-  void fetchNotes();
-});
 </script>
 
 <template>
