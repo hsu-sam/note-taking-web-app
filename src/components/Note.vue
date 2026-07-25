@@ -53,7 +53,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
       <p
         v-for="tag in note.tags"
         :key="tag"
-        class="bg-neutral-100 rounded-4 py-0.5 px-1.5 text-xs"
+        class="bg-neutral-200 rounded-4 py-0.5 px-1.5 text-xs"
       >
         {{ tag }}
       </p>

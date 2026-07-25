@@ -112,7 +112,7 @@ async function saveNote() {
 
   trigger("success");
   toast.success("Note updated.");
-  await router.push({ name: listRouteName.value });
+  await router.push({ name: "home" });
 }
 
 async function archiveNote() {
@@ -126,7 +126,7 @@ async function archiveNote() {
 
   trigger("success");
   toast.success("Note archived.");
-  await router.push({ name: listRouteName.value });
+  await router.push({ name: "home" });
 }
 
 async function restoreNote() {

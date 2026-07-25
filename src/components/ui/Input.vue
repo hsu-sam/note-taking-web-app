@@ -48,7 +48,7 @@ const reactiveType = ref(props.type);
             : 'rounded-4',
           {
             'text-green-600': isValid,
-            'text-error': meta.touched && !meta.valid,
+            'text-neutral-600': meta.touched && !meta.valid,
           },
         ]"
       >
@@ -60,7 +60,7 @@ const reactiveType = ref(props.type);
           :type="reactiveType"
           :class="{
             'bg-green-600': isValid,
-            'border-error': meta.touched && !meta.valid,
+            'border-red-500': meta.touched && !meta.valid,
           }"
           class="min-w-0 flex-1 focus-visible:outline-none"
         />
@@ -80,20 +80,20 @@ const reactiveType = ref(props.type);
                 v-if="reactiveType === 'password'"
                 @click="reactiveType = 'text'"
                 icon="lucide:eye"
-                class="text-secondary-gray"
+                class="text-neutral-600"
               />
               <Icon
                 v-else
                 @click="reactiveType = 'password'"
                 icon="lucide:eye-off"
-                class="text-secondary-gray"
+                class="text-neutral-600"
               />
             </button>
           </slot>
         </div>
       </div>
       <slot v-if="!errorMessage" name="helper" class="font-medium"></slot>
-      <ErrorMessage :name class="font-medium text-error" />
+      <ErrorMessage :name class="font-medium text-red-500" />
     </label>
   </Field>
 </template>
@@ -107,6 +107,6 @@ const reactiveType = ref(props.type);
 }
 
 .input-container:has(:focus-visible) {
-  @apply outline-1 outline-offset-1 outline-neutral-400;
+  @apply outline-none ring-1 ring-neutral-400 hover:bg-neutral-100;
 }
 </style>

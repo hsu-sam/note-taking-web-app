@@ -57,7 +57,7 @@ const onSubmit: SubmissionHandler = async (values) => {
       <p>Please log in to continue</p>
     </div>
     <Form
-      class="flex flex-col gap-200"
+      class="flex flex-col gap-200 relative"
       :validation-schema="schema"
       @submit="onSubmit"
     >
@@ -69,13 +69,23 @@ const onSubmit: SubmissionHandler = async (values) => {
         placeholder="email@example.com"
         @click="trigger('selection')"
       />
-      <Input
-        name="password"
-        label="Password"
-        type="password"
-        autocomplete="current-password"
-        @click="trigger('selection')"
-      />
+      <div class="relative">
+        <Input
+          name="password"
+          label="Password"
+          type="password"
+          autocomplete="current-password"
+          @click="trigger('selection')"
+        />
+
+        <router-link
+          :to="{ name: 'auth.forgot-password' }"
+          class="text-neutral-400 hover:text-blue-500 absolute right-0 top-0 underline"
+          @click="trigger('selection')"
+        >
+          Forgot
+        </router-link>
+      </div>
 
       <Button
         class="w-full"
@@ -107,7 +117,7 @@ const onSubmit: SubmissionHandler = async (values) => {
       No account yet?
       <router-link
         :to="{ name: 'auth.signup' }"
-        class="text-neutral-950 hover:text-neutral-600"
+        class="text-neutral-950 hover:text-blue-500"
         @click="trigger('selection')"
         >Sign up</router-link
       >

@@ -18,7 +18,7 @@ defineExpose({
 <template>
   <label
     :class="[
-      'flex gap-075 rounded-8 has-disabled:opacity-40 text-sm py-150 px-200 bg-neutral-0 border border-neutral-300 focus-within:border-teal-700 items-center text-neutral-800 transition-colors dark:bg-neutral-dark-800 dark:border-neutral-dark-500 dark:focus-within:border-neutral-dark-300 dark:text-neutral-dark-100 font-weight-normal',
+      'flex gap-075 rounded-8 has-disabled:opacity-40 text-sm py-150 px-200 bg-neutral-0 border border-neutral-300 focus-within:border-neutral-700 items-center text-neutral-800 transition-colors dark:bg-neutral-dark-800 dark:border-neutral-dark-500 dark:focus-within:border-neutral-dark-300 dark:text-neutral-dark-100 font-weight-normal',
       $attrs.class,
     ]"
   >

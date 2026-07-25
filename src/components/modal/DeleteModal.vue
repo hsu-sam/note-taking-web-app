@@ -33,25 +33,25 @@ function confirmDelete() {
   >
     <template #main>
       <div class="flex flex-col">
-        <div class="flex items-start gap-150 p-200">
+        <div class="flex items-start gap-200 p-200">
           <div
-            class="flex shrink-0 items-center justify-center rounded-8 bg-neutral-100 p-100"
+            class="flex shrink-0 items-center justify-center rounded-8 bg-neutral-100 p-200"
           >
-            <Icon icon="local:delete" class="size-5 text-neutral-950" />
+            <Icon icon="local:delete" class="size-6 text-neutral-950" />
           </div>
 
-          <div class="flex flex-col gap-050">
+          <div class="flex flex-col gap-075">
             <h2>Delete Note</h2>
             <p class="text-sm text-neutral-600">
-              Are you sure you want to permanently delete this note? This
-              action cannot be undone.
+              Are you sure you want to permanently delete this note? This action
+              cannot be undone.
             </p>
           </div>
         </div>
 
         <div class="border-t border-neutral-200"></div>
 
-        <div class="flex justify-end gap-150 p-200">
+        <div class="flex justify-end gap-200 py-200 px-250">
           <Button type="button" variant="secondary" @click="cancel">
             Cancel
           </Button>
