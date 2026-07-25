@@ -5,6 +5,14 @@ import { useWebHaptics } from "web-haptics/vue";
 import Button from "@/components/ui/Button.vue";
 import Modal from "@/components/modal.vue";
 
+interface DeleteModalProps {
+  loading?: boolean;
+}
+
+withDefaults(defineProps<DeleteModalProps>(), {
+  loading: false,
+});
+
 const isOpen = defineModel<boolean>();
 
 const emit = defineEmits<{
@@ -21,7 +29,6 @@ function cancel() {
 function confirmDelete() {
   trigger("selection");
   emit("confirm");
-  isOpen.value = false;
 }
 </script>
 
@@ -52,10 +59,20 @@ function confirmDelete() {
         <div class="border-t border-neutral-200"></div>
 
         <div class="flex justify-end gap-200 py-200 px-250">
-          <Button type="button" variant="secondary" @click="cancel">
+          <Button
+            type="button"
+            variant="secondary"
+            :disabled="loading"
+            @click="cancel"
+          >
             Cancel
           </Button>
-          <Button type="button" variant="danger" @click="confirmDelete">
+          <Button
+            type="button"
+            variant="danger"
+            :loading="loading"
+            @click="confirmDelete"
+          >
             Delete Note
           </Button>
         </div>

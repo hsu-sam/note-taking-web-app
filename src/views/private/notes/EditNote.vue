@@ -24,15 +24,13 @@ const updatedAt = ref<string | null>(null);
 const isArchived = ref(false);
 
 const isLoading = ref(true);
+const isArchiving = ref(false);
 const isSaving = ref(false);
 const isRestoring = ref(false);
+const isDeleting = ref(false);
 const isArchiveModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const noteId = computed(() => String(route.params.id ?? ""));
-
-const listRouteName = computed(
-  () => String(route.matched[0]?.name ?? "home") as "home" | "user.archived",
-);
 
 const formattedUpdatedAt = computed(() => {
   if (!updatedAt.value) return "Not yet saved";
@@ -116,7 +114,11 @@ async function saveNote() {
 }
 
 async function archiveNote() {
+  if (isArchiving.value) return;
+
+  isArchiving.value = true;
   const { error } = await updateNote({ id: noteId.value, isArchived: true });
+  isArchiving.value = false;
 
   if (error) {
     trigger("error");
@@ -124,6 +126,7 @@ async function archiveNote() {
     return;
   }
 
+  isArchiveModalOpen.value = false;
   trigger("success");
   toast.success("Note archived.");
   await router.push({ name: "home" });
@@ -149,7 +152,11 @@ async function restoreNote() {
 }
 
 async function removeNote() {
+  if (isDeleting.value) return;
+
+  isDeleting.value = true;
   const { error } = await deleteNote(noteId.value);
+  isDeleting.value = false;
 
   if (error) {
     trigger("error");
@@ -157,9 +164,12 @@ async function removeNote() {
     return;
   }
 
+  isDeleteModalOpen.value = false;
   trigger("success");
   toast.success("Note deleted.");
-  await loadNote();
+  await router.push({
+    name: isArchived.value ? "user.archived" : "home",
+  });
 }
 
 onMounted(() => {
@@ -243,7 +253,7 @@ onMounted(() => {
       <div class="flex gap-200 border-t border-neutral-200 pt-200">
         <Button type="submit" :loading="isSaving">Save Note</Button>
         <Button
-          :to="{ name: listRouteName }"
+          :to="isArchived ? { name: 'user.archived' } : { name: 'home' }"
           type="button"
           variant="secondary"
           :disabled="isSaving"
@@ -291,6 +301,14 @@ onMounted(() => {
     >
   </div>
 
-  <ArchiveModal v-model="isArchiveModalOpen" @confirm="archiveNote" />
-  <DeleteModal v-model="isDeleteModalOpen" @confirm="removeNote" />
+  <ArchiveModal
+    v-model="isArchiveModalOpen"
+    :loading="isArchiving"
+    @confirm="archiveNote"
+  />
+  <DeleteModal
+    v-model="isDeleteModalOpen"
+    :loading="isDeleting"
+    @confirm="removeNote"
+  />
 </template>

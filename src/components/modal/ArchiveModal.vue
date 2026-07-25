@@ -5,6 +5,14 @@ import { useWebHaptics } from "web-haptics/vue";
 import Button from "@/components/ui/Button.vue";
 import Modal from "@/components/modal.vue";
 
+interface ArchiveModalProps {
+  loading?: boolean;
+}
+
+withDefaults(defineProps<ArchiveModalProps>(), {
+  loading: false,
+});
+
 const isOpen = defineModel<boolean>();
 
 const emit = defineEmits<{
@@ -21,7 +29,6 @@ function cancel() {
 function confirmArchive() {
   trigger("selection");
   emit("confirm");
-  isOpen.value = false;
 }
 </script>
 
@@ -52,10 +59,20 @@ function confirmArchive() {
         <div class="border-t border-neutral-200"></div>
 
         <div class="flex justify-end gap-200 py-200 px-250">
-          <Button type="button" variant="secondary" @click="cancel">
+          <Button
+            type="button"
+            variant="secondary"
+            :disabled="loading"
+            @click="cancel"
+          >
             Cancel
           </Button>
-          <Button type="button" variant="primary" @click="confirmArchive">
+          <Button
+            type="button"
+            variant="primary"
+            :loading="loading"
+            @click="confirmArchive"
+          >
             Archive Note
           </Button>
         </div>
