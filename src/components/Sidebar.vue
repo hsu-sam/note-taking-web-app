@@ -39,7 +39,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
       <Logo />
     </div>
 
-    <div class="flex flex-col gap-100">
+    <div class="flex flex-col gap-100 h-full overflow-y-auto scrollbar-none">
       <div class="flex flex-col gap-050">
         <router-link
           v-for="section in sections"

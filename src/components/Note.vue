@@ -51,7 +51,7 @@ const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
 
     <div class="flex gap-100 flex-wrap" v-if="note.tags.length > 0">
       <p
-        v-for="tag in note.tags"
+        v-for="tag in note.tags.slice(0, 3)"
         :key="tag"
         class="bg-neutral-200 rounded-4 py-0.5 px-1.5 text-xs"
       >

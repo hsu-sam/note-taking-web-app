@@ -41,28 +41,30 @@ const activeNotes = computed(() => {
         Create New Note
       </Button>
 
-      <p v-if="activeTag">
-        All notes with the ”{{ activeTag }}” tag are shown here.
-      </p>
-
-      <div
-        v-if="!loading && activeNotes.length === 0"
-        class="border border-neutral-200 rounded-8 p-100 bg-neutral-100"
-      >
-        <p v-if="debouncedQuery">
-          No notes match “{{ debouncedQuery }}”.
+      <div class="flex flex-col gap-200 scrollbar-none overflow-y-auto">
+        <p v-if="activeTag">
+          All notes with the ”{{ activeTag }}” tag are shown here.
         </p>
-        <p v-else-if="activeTag">No notes found with the tag “{{ activeTag }}”.</p>
-        <p v-else>
-          You don’t have any notes yet. Start a new note to capture your
-          thoughts and ideas.
-        </p>
-      </div>
 
-      <p v-if="loading" class="text-sm text-neutral-500">Loading notes...</p>
+        <div
+          v-if="!loading && activeNotes.length === 0"
+          class="border border-neutral-200 rounded-8 p-100 bg-neutral-100"
+        >
+          <p v-if="debouncedQuery">No notes match “{{ debouncedQuery }}”.</p>
+          <p v-else-if="activeTag">
+            No notes found with the tag “{{ activeTag }}”.
+          </p>
+          <p v-else>
+            You don’t have any notes yet. Start a new note to capture your
+            thoughts and ideas.
+          </p>
+        </div>
 
-      <div v-else-if="activeNotes.length > 0" class="flex flex-col gap-150">
-        <Note v-for="note in activeNotes" :key="note.id" :note="note" />
+        <p v-if="loading" class="text-sm text-neutral-500">Loading notes...</p>
+
+        <div v-else-if="activeNotes.length > 0" class="flex flex-col gap-150">
+          <Note v-for="note in activeNotes" :key="note.id" :note="note" />
+        </div>
       </div>
     </div>
 

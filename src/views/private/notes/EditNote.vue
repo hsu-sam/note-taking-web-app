@@ -265,7 +265,7 @@ onMounted(() => {
     </template>
   </form>
 
-  <div class="flex flex-col gap-200 w-full px-200 py-250">
+  <div class="flex flex-col gap-200 w-70 px-200 py-250">
     <Button
       v-if="isArchived"
       type="button"
@@ -281,7 +281,7 @@ onMounted(() => {
       type="button"
       variant="border"
       icon="local:archive"
-      class="w-full"
+      class="w-full justify-start"
       @click="
         trigger('selection');
         isArchiveModalOpen = true;
@@ -292,7 +292,7 @@ onMounted(() => {
       type="button"
       variant="border"
       icon="local:delete"
-      class="w-full"
+      class="w-full justify-start"
       @click="
         trigger('selection');
         isDeleteModalOpen = true;
