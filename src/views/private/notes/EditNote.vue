@@ -187,13 +187,13 @@ onMounted(() => {
     </template>
 
     <template v-else>
-      <Input
+      <input
         v-model="title"
         name="note-title"
-        variant="ghost"
+        type="text"
         placeholder="Enter a title..."
         :required="false"
-        class="w-full text-2xl! font-bold! text-neutral-950 placeholder:text-neutral-950"
+        class="w-full text-2xl! font-bold! text-neutral-950 placeholder:text-neutral-950 focus-visible:outline-none"
       />
 
       <div class="flex gap-150">

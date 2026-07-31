@@ -14,6 +14,6 @@ const router = useRouter();
     />
     <h1 class="text-3xl font-bold text-neutral-950">Page Not Found</h1>
     <p>The page you're looking for doesn't exist or has been moved.</p>
-    <Button @click="router.push('/')">Go Back</Button>
+    <Button @click="router.push('/')">Go to Home</Button>
   </div>
 </template>

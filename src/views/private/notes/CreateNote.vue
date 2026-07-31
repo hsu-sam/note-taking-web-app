@@ -69,13 +69,13 @@ async function saveNote() {
     class="flex gap-200 h-full w-147 shrink-0 flex-col border-r border-neutral-200 p-300"
     @submit.prevent="saveNote"
   >
-    <Input
+    <input
       v-model="title"
       name="note-title"
-      variant="ghost"
+      type="text"
       placeholder="Enter a title..."
       :required="false"
-      class="w-full text-2xl! font-bold! text-neutral-950 placeholder:text-neutral-950"
+      class="w-full text-2xl! font-bold! text-neutral-950 placeholder:text-neutral-950 focus-visible:outline-none"
     />
 
     <div class="flex gap-150">
