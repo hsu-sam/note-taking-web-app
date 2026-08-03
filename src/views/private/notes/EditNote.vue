@@ -271,7 +271,7 @@ onMounted(() => {
       type="button"
       variant="border"
       icon="local:refresh-left"
-      class="w-full"
+      class="w-full justify-start"
       :loading="isRestoring"
       @click="restoreNote"
       >Restore Note</Button
