@@ -13,7 +13,7 @@ import { useAuth } from "@/services/useAuth";
 import { emailRule, requiredRule } from "@/utils/validators";
 
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
-const { signIn } = useAuth();
+const { signIn, signInWithGoogle } = useAuth();
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
@@ -24,6 +24,17 @@ const schema = {
 };
 
 const isSubmitting = ref(false);
+const isGoogleSubmitting = ref(false);
+
+function getPostAuthRedirect(): string {
+  const redirect = route.query.redirect;
+  return typeof redirect === "string" &&
+    redirect.startsWith("/") &&
+    !redirect.startsWith("//") &&
+    !redirect.includes("\\")
+    ? redirect
+    : router.resolve({ name: "home" }).href;
+}
 
 const onSubmit: SubmissionHandler = async (values) => {
   isSubmitting.value = true;
@@ -42,9 +53,19 @@ const onSubmit: SubmissionHandler = async (values) => {
   }
 
   trigger("success");
-  const redirect = route.query.redirect;
-  await router.push(typeof redirect === "string" ? redirect : { name: "home" });
+  await router.push(getPostAuthRedirect());
 };
+
+async function loginWithGoogle() {
+  isGoogleSubmitting.value = true;
+  const { error } = await signInWithGoogle(getPostAuthRedirect());
+  isGoogleSubmitting.value = false;
+
+  if (error) {
+    trigger("error");
+    toast.error(error.message);
+  }
+}
 </script>
 
 <template>
@@ -105,7 +126,11 @@ const onSubmit: SubmissionHandler = async (values) => {
         class="w-full"
         variant="border"
         icon="local:google"
-        @click="trigger('selection')"
+        :loading="isGoogleSubmitting"
+        @click="
+          trigger('selection');
+          loginWithGoogle();
+        "
       >
         Google
       </Button>

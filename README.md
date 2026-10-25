@@ -40,3 +40,20 @@ pnpm dev
 ```sh
 pnpm build
 ```
+
+## Google Sign-In
+
+Google sign-in uses Supabase OAuth. In the Supabase dashboard, enable the
+Google provider under **Authentication → Sign In / Providers** and enter the
+OAuth client ID and secret from a Google Cloud web OAuth client. Set the
+authorized redirect URI in Google Cloud to the Supabase callback URL shown in
+the provider settings (typically `https://<project-ref>.supabase.co/auth/v1/callback`).
+
+Add the app URLs to **Authentication → URL Configuration → Redirect URLs** in
+Supabase, for example:
+
+- `http://localhost:5173/**` for local development
+- `https://your-app-domain.example/**` for production
+
+The app returns from Google to `/login` and then routes the user to the intended
+page, or to Home when there is no saved destination.

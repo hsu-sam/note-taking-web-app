@@ -13,7 +13,7 @@ import { useAuth } from "@/services/useAuth";
 import { emailRule, passwordRule } from "@/utils/validators";
 
 const { trigger } = useWebHaptics({ debug: import.meta.env.DEV });
-const { signUp } = useAuth();
+const { signInWithGoogle, signUp } = useAuth();
 const toast = useToast();
 const router = useRouter();
 
@@ -23,6 +23,21 @@ const schema = {
 };
 
 const isSubmitting = ref(false);
+const isGoogleSubmitting = ref(false);
+
+async function signUpWithGoogle() {
+  trigger("selection");
+  isGoogleSubmitting.value = true;
+  const { error } = await signInWithGoogle(
+    router.resolve({ name: "home" }).href,
+  );
+  isGoogleSubmitting.value = false;
+
+  if (error) {
+    trigger("error");
+    toast.error(error.message);
+  }
+}
 
 const onSubmit: SubmissionHandler = async (values, actions) => {
   isSubmitting.value = true;
@@ -102,13 +117,14 @@ const onSubmit: SubmissionHandler = async (values, actions) => {
     <div class="border-t border-neutral-300"></div>
 
     <div class="flex flex-col gap-200">
-      <p class="self-center">Or login with:</p>
+      <p class="self-center">Or continue with:</p>
 
       <Button
         class="w-full"
         variant="border"
         icon="local:google"
-        @click="trigger('selection')"
+        :loading="isGoogleSubmitting"
+        @click="signUpWithGoogle"
       >
         Google
       </Button>

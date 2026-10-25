@@ -86,6 +86,15 @@ router.beforeEach(async (to) => {
     isAuthenticated.value &&
     !isPasswordRecovery.value
   ) {
+    const redirect = to.query.redirect;
+    if (
+      typeof redirect === "string" &&
+      redirect.startsWith("/") &&
+      !redirect.startsWith("//") &&
+      !redirect.includes("\\")
+    ) {
+      return redirect;
+    }
     return { name: "home" };
   }
 

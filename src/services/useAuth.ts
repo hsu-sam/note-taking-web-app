@@ -50,6 +50,19 @@ async function signIn(email: string, password: string) {
   return { error };
 }
 
+async function signInWithGoogle(redirectPath: string) {
+  const callbackUrl = new URL("/login", window.location.origin);
+  callbackUrl.searchParams.set("redirect", redirectPath);
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: callbackUrl.toString(),
+    },
+  });
+  return { error };
+}
+
 async function signUp(email: string, password: string) {
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -89,6 +102,7 @@ export function useAuth() {
     isPasswordRecovery,
     initAuth,
     signIn,
+    signInWithGoogle,
     signUp,
     signOut,
     sendPasswordReset,
