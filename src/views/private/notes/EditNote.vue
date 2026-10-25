@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
-import { computed, onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed, ref, watch } from "vue";
+import {
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+  useRoute,
+  useRouter,
+} from "vue-router";
 import { useWebHaptics } from "web-haptics/vue";
 
 import ArchiveModal from "@/components/modal/ArchiveModal.vue";
+import DiscardChangesModal from "@/components/modal/DiscardChangesModal.vue";
 import DeleteModal from "@/components/modal/DeleteModal.vue";
 import Button from "@/components/ui/Button.vue";
 import Input from "@/components/ui/Input.vue";
@@ -20,6 +26,9 @@ const { getNoteById, updateNote, deleteNote } = useNotes();
 const title = ref("");
 const tags = ref("");
 const content = ref("");
+const savedTitle = ref("");
+const savedTags = ref("");
+const savedContent = ref("");
 const updatedAt = ref<string | null>(null);
 const isArchived = ref(false);
 
@@ -30,7 +39,19 @@ const isRestoring = ref(false);
 const isDeleting = ref(false);
 const isArchiveModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+const isDiscardModalOpen = ref(false);
 const noteId = computed(() => String(route.params.id ?? ""));
+const isDirty = computed(
+  () =>
+    !isLoading.value &&
+    (title.value !== savedTitle.value ||
+      tags.value !== savedTags.value ||
+      content.value !== savedContent.value),
+);
+
+let pendingConfirmation: Promise<boolean> | null = null;
+let resolvePendingConfirmation: ((discard: boolean) => void) | null = null;
+let loadRequestId = 0;
 
 const formattedUpdatedAt = computed(() => {
   if (!updatedAt.value) return "Not yet saved";
@@ -48,15 +69,53 @@ function parseTags(rawTags: string): string[] {
     .filter((tag) => Boolean(tag));
 }
 
-async function loadNote() {
-  if (!noteId.value) {
+function confirmDiscardChanges(): Promise<boolean> {
+  if (!isDirty.value) return Promise.resolve(true);
+  if (pendingConfirmation) return pendingConfirmation;
+
+  pendingConfirmation = new Promise((resolve) => {
+    resolvePendingConfirmation = resolve;
+    isDiscardModalOpen.value = true;
+  });
+
+  return pendingConfirmation;
+}
+
+function settleDiscardConfirmation(discard: boolean) {
+  const resolve = resolvePendingConfirmation;
+  resolvePendingConfirmation = null;
+  pendingConfirmation = null;
+  isDiscardModalOpen.value = false;
+  resolve?.(discard);
+}
+
+function markCurrentValuesSaved() {
+  savedTitle.value = title.value;
+  savedTags.value = tags.value;
+  savedContent.value = content.value;
+}
+
+async function discardCurrentEdits(): Promise<boolean> {
+  if (!(await confirmDiscardChanges())) return false;
+
+  title.value = savedTitle.value;
+  tags.value = savedTags.value;
+  content.value = savedContent.value;
+  return true;
+}
+
+async function loadNote(id: string) {
+  const requestId = ++loadRequestId;
+
+  if (!id) {
     toast.error("Invalid note id.");
     await router.push({ name: "home" });
     return;
   }
 
   isLoading.value = true;
-  const { data, error } = await getNoteById(noteId.value);
+  const { data, error } = await getNoteById(id);
+  if (requestId !== loadRequestId) return;
   isLoading.value = false;
 
   if (error) {
@@ -78,6 +137,7 @@ async function loadNote() {
   tags.value = (data.tags ?? []).join(", ");
   updatedAt.value = data.updated_at ?? data.created_at ?? null;
   isArchived.value = data.is_archived ?? false;
+  markCurrentValuesSaved();
 }
 
 async function saveNote() {
@@ -108,6 +168,10 @@ async function saveNote() {
     return;
   }
 
+  title.value = trimmedTitle || "Untitled Note";
+  content.value = trimmedContent;
+  tags.value = parseTags(tags.value).join(", ");
+  markCurrentValuesSaved();
   trigger("success");
   toast.success("Note updated.");
   await router.push({ name: "home" });
@@ -115,6 +179,7 @@ async function saveNote() {
 
 async function archiveNote() {
   if (isArchiving.value) return;
+  if (!(await discardCurrentEdits())) return;
 
   isArchiving.value = true;
   const { error } = await updateNote({ id: noteId.value, isArchived: true });
@@ -134,6 +199,7 @@ async function archiveNote() {
 
 async function restoreNote() {
   if (isRestoring.value) return;
+  if (!(await discardCurrentEdits())) return;
 
   trigger("selection");
   isRestoring.value = true;
@@ -153,6 +219,7 @@ async function restoreNote() {
 
 async function removeNote() {
   if (isDeleting.value) return;
+  if (!(await discardCurrentEdits())) return;
 
   isDeleting.value = true;
   const { error } = await deleteNote(noteId.value);
@@ -172,9 +239,16 @@ async function removeNote() {
   });
 }
 
-onMounted(() => {
-  void loadNote();
+onBeforeRouteUpdate((to, from) => {
+  if (String(to.params.id ?? "") === String(from.params.id ?? "")) {
+    return true;
+  }
+  return confirmDiscardChanges();
 });
+
+onBeforeRouteLeave(confirmDiscardChanges);
+
+watch(noteId, (id) => void loadNote(id), { immediate: true });
 </script>
 
 <template>
@@ -310,5 +384,10 @@ onMounted(() => {
     v-model="isDeleteModalOpen"
     :loading="isDeleting"
     @confirm="removeNote"
+  />
+  <DiscardChangesModal
+    v-model="isDiscardModalOpen"
+    @cancel="settleDiscardConfirmation(false)"
+    @confirm="settleDiscardConfirmation(true)"
   />
 </template>
